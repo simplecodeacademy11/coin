@@ -12,6 +12,28 @@ class PriceScreen extends StatefulWidget {
 class _PriceScreenState extends State<PriceScreen> {
   Map<String, String> coinValues = {};
   String selectedCurrency = 'AUD';
+  bool isWaiting = false;
+
+  @override
+  void initState() {
+    super.initState();
+    getData();
+  }
+
+  void getData() async {
+    isWaiting = true;
+
+    try {
+      var data = await CoinData().getAPIData(selectedCurrency);
+
+      isWaiting = false;
+      setState(() {
+        coinValues = data;
+      });
+    } catch (e) {
+      print(e);
+    }
+  }
 
   Column makeCards() {
     List<CrytoCard> list = [];
@@ -32,6 +54,7 @@ class _PriceScreenState extends State<PriceScreen> {
       onSelectedItemChanged: (value) {
         setState(() {
           selectedCurrency = currenciesList[value];
+          getData();
         });
       },
       children: pickerItems,
